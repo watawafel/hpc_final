@@ -1,60 +1,50 @@
-#include "bzlib.c"
-
+#include "bzlib.h"
+#include <vector>
 #include <iostream>
+#include <cstdlib>
+#include <fstream>
+
 using std::cin;
 using std::cout;
-//https://www.gamedev.net/forums/topic/464525-bzip2/
 
-static void _Multiple_thread_compress( void* arg )
+int partition_range(int size){
+	cout <<" size "<< size;
+}
 
-		{
-#ifdef MANAGED_ENABLE_COMPRESSION
-			CompressionCommandMT *cmd = static_cast<CompressionCommandMT*>(arg);
-			thisType::CompressionHeap& ch = cmd->_this->compressedHeap;
-			thisType::MemoryBlockIter mb = cmd->_this->memoryBlocks.begin();
+int main(){
 
-			IterSeek< MemoryBlockContainer >( cmd->memoryBlockIndex, mb );
+	int numThreads, blockSize, inputSize;
+	int destLen, sourceLen;	
 
-			unsigned int destLen	= ch.heapSize - ch.cur;
-			unsigned int sourceLen	= mb->sizeBytes;
-			char *dest	  = (char*) ch.heap + ch.cur;
-			char *source  = (char*) mb->address;
+	numThreads = 4;	
+	blockSize = 900;
+	inputSize = numThreads * blockSize;
 	
-			int result = BZ2_bzBuffToBuffCompress( dest, &destLen, source, sourceLen,
-									  cmd->blockSize, 0, cmd->workFactor );
+	std::vector <char> in_buffer(inputSize);
+	std::vector <char> out_buffer(inputSize);
 
-			switch (result)
-			{
-				case BZ_OK: 
-					std::cout << mb->sizeBytes << " compressed to: " << destLen << std::endl;
-					ch.memoryBlocks.back().address = ch.heap + ch.cur;
-					ch.memoryBlocks.back().sizeBytes = destLen;
-					ch.cur += destLen;
-					break;
-				case BZ_OUTBUFF_FULL: break;
-				case BZ_MEM_ERROR: break;
-			}
-#endif		
-		}
+	std::fstream fin("dummy.txt");
 
-int main(int argc, char *argv[])
-{
-//	unsigned int destLen	= ch.heapSize - ch.cur;
-//	unsigned int sourceLen	= mb->sizeBytes;
-//	char *dest	  = (char*) ch.heap + ch.cur;
-//	char *source  = (char*) mb->address;
-    
-char ch;
-    unsigned m = 10;
-    while (cin && m--) {
-        cin.read(&ch, sizeof(ch));
-	unsigned int destLen = sizeof(ch);
-	unsigned int sourceLen = sizeof(ch);
-	char *dest =  &ch;
-	char *source = &ch;
-        BZ2_bzBuffToBuffCompress(dest, &destLen, source, sourceLen, 0,0,0);	
-	cout << ch;
-	}
-    return 0;
+	if ( !fin ) {std::cerr << "Unable to open file";}
+ 
+	else {
+
+	   do {
+		fin.read( &in_buffer[0], in_buffer.size() );
+
+		//int result = BZ2_bzBuffToBuffCompress();
+
+	     } while( !fin.eof());
+
+	   }
+	
+	for (std::vector<char>::iterator it = in_buffer.begin(); it != in_buffer.end(); ++it)
+    		std::cout  << *it;
+  		std::cout << '\n';
+
+	cout << "BUFFER SIZE " << partition_range(in_buffer.size());	
+	//cout <<"BUFFFFER" << &buffer[1];	
+
+   return 0;
 }
 
