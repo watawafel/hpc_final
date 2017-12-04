@@ -13,7 +13,7 @@ unsigned int start, end;
 static std::vector<int> partition_start (numThreads);
 static std::vector<int> partition_end (numThreads);
 
-int partition_range(int start, int end, int size, int numThreads, int threadID){
+int partition_range(int size, int numThreads, int threadID){
 	
 	if ( threadID == 0){
 		partition_start[threadID] = 0;
@@ -60,7 +60,7 @@ int main(){
 
 		
 		fin.read( &in_buffer[0], in_buffer.size());	
-//		int actualReadSize = fin.gcount();	
+		int actualReadSize = fin.gcount();	
 		cout << actualReadSize;							
 //		if(fin.eof())
 //		{	int actualReadSize = fin.gcount();	
@@ -71,9 +71,13 @@ int main(){
 
 		for (int threadID = 0; threadID < numThreads; ++threadID){
 
-			partition_range(start, end, in_buffer.size(), numThreads, threadID);
-			
-			
+			unsigned int outputSize = (600 + (actualReadSize * 1.2));
+
+			partition_range(actualReadSize, numThreads, threadID);			
+
+			out_buffers[threadID].resize( outputSize );
+
+			BZ2_bzBuffToBuffCompress( reinterpret_cast<char*> (&out_buffers[threadID]), &outputSize, reinterpret_cast<char*> (&in_buffer), actualReadSize, 9, 0, 0);
 
 		}	
 		
