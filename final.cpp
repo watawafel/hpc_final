@@ -54,20 +54,23 @@ int main(){
 
 			partition_range(start, end, in_buffer.size(), numThreads, threadID);
 			
+		}	
+		fin.read( &in_buffer[0], in_buffer.size());
 	
-			fin.read( &in_buffer[partition_start[threadID]], in_buffer[partition_end[threadID]]); //in_buffer.size());
+/*
+		fin.read( &in_buffer[partition_start[threadID]], in_buffer[partition_end[threadID]]); //in_buffer.size());
 //		cout<<"EXIT READ";
-		for (int i = partition_start[threadID]; i < partition_end[threadID]; ++i){
+		/for (int i = partition_start[threadID]; i < partition_end[threadID]; ++i){
 			//std::cout << "GOT TO LOOP";
 			std::cout  << *in_buffer[5];
                 	std::cout << '\n';
 			}				
+				
 					
-			}		
-		//	BZ2_bzBuffToBuffCompress(out_buffer.data(), &inputSize, in_buffer.data(), inputSize, 900, 0, 0);
+	BZ2_bzBuffToBuffCompress(out_buffer.data(), &inputSize, in_buffer.data(), inputSize, 900, 0, 0);
 //		std::copy(in_buffer.begin(), in_buffer.end(), out_buffer);
-		//out_buffer[]i=&in_buffer[0];		
-
+	out_buffer[]i=&in_buffer[0];		
+*/
 	     } while( !fin.eof());
 
 	   }
