@@ -28,6 +28,14 @@ int partition_range(int start, int end, int size, int numThreads, int threadID){
 //	cout << "SIZE "<< size <<" THREAD " << threadID <<" start "<< start << " end " << end;
 }
 
+
+void print_buffer( std::vector<char>& in_buffer){
+	for (std::vector<char>::iterator it = in_buffer.begin(); it != in_buffer.end(); ++it)
+                std::cout  << *it;
+                std::cout << '\n';
+}
+
+
 int main(){
 
 	unsigned int blockSize, inputSize;
@@ -40,7 +48,7 @@ int main(){
 	
 	std::vector <char> in_buffer(inputSize);
 	std::vector <char> out_buffer(inputSize);
-		
+//	char * buffer = new char[inputSize];		
 
 	std::fstream fin("test.txt");
 
@@ -49,14 +57,23 @@ int main(){
 	else {
 
 	   do {
+//		char * buffer = new char[inputSize];
+		
+		fin.read( &in_buffer[0], in_buffer.size());	
+//		fin.read(buffer, inputSize);
+//		cout <<"SIZE" <<  sizeof(buffer);
+		print_buffer(in_buffer);								
+		if(fin.eof())
+		{	int actualReadSize = fin.gcount();	
+			cout << "READ NOT FULL" << actualReadSize;
+		}
 
 		for (int threadID = 0; threadID < numThreads; ++threadID){
 
 			partition_range(start, end, in_buffer.size(), numThreads, threadID);
 			
 		}	
-		fin.read( &in_buffer[0], in_buffer.size());
-	
+		
 /*
 		fin.read( &in_buffer[partition_start[threadID]], in_buffer[partition_end[threadID]]); //in_buffer.size());
 //		cout<<"EXIT READ";
@@ -74,11 +91,11 @@ int main(){
 	     } while( !fin.eof());
 
 	   }
-	
+/*	
 	for (std::vector<char>::iterator it = in_buffer.begin(); it != in_buffer.end(); ++it)
     		std::cout  << *it;
   		std::cout << '\n';
-
+*/
 
 //	cout << "BUFFER SIZE " << partition_range(0, in_buffer.size(), 4, 0);	
 	//cout <<"BUFFER" << &in_buffer[1];	
