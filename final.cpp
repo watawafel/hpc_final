@@ -8,7 +8,7 @@
 using std::cin;
 using std::cout;
 
-unsigned int numThreads =4;
+unsigned int numThreads = 4;
 unsigned int start, end;
 static std::vector<int> partition_start (numThreads);
 static std::vector<int> partition_end (numThreads);
@@ -20,7 +20,7 @@ int partition_range(int start, int end, int size, int numThreads, int threadID){
 		partition_end[threadID] = size / numThreads;
 	}	
 	else {
-		partition_start[threadID] = ((size / numThreads) *threadID ) + 1;
+		partition_start[threadID] = ((size / numThreads) * threadID ) + 1;
 		partition_end[threadID] =  ((size / numThreads) * (threadID + 1));
 	
 	}
@@ -47,8 +47,8 @@ int main(){
 	inputSize = numThreads * blockSize;
 	
 	std::vector <char> in_buffer(inputSize);
-	std::vector <char> out_buffer(inputSize);
-//	char * buffer = new char[inputSize];		
+	std::vector< std::vector <char> > out_buffers(inputSize);
+		
 
 	std::fstream fin("test.txt");
 
@@ -57,37 +57,27 @@ int main(){
 	else {
 
 	   do {
-//		char * buffer = new char[inputSize];
+
 		
 		fin.read( &in_buffer[0], in_buffer.size());	
-//		fin.read(buffer, inputSize);
-//		cout <<"SIZE" <<  sizeof(buffer);
-		print_buffer(in_buffer);								
-		if(fin.eof())
-		{	int actualReadSize = fin.gcount();	
-			cout << "READ NOT FULL" << actualReadSize;
-		}
+//		int actualReadSize = fin.gcount();	
+		cout << actualReadSize;							
+//		if(fin.eof())
+//		{	int actualReadSize = fin.gcount();	
+//			
+//			cout << "READ NOT FULL" << actualReadSize;
+//		}
+
 
 		for (int threadID = 0; threadID < numThreads; ++threadID){
 
 			partition_range(start, end, in_buffer.size(), numThreads, threadID);
 			
+			
+
 		}	
 		
-/*
-		fin.read( &in_buffer[partition_start[threadID]], in_buffer[partition_end[threadID]]); //in_buffer.size());
-//		cout<<"EXIT READ";
-		/for (int i = partition_start[threadID]; i < partition_end[threadID]; ++i){
-			//std::cout << "GOT TO LOOP";
-			std::cout  << *in_buffer[5];
-                	std::cout << '\n';
-			}				
-				
-					
-	BZ2_bzBuffToBuffCompress(out_buffer.data(), &inputSize, in_buffer.data(), inputSize, 900, 0, 0);
-//		std::copy(in_buffer.begin(), in_buffer.end(), out_buffer);
-	out_buffer[]i=&in_buffer[0];		
-*/
+		
 	     } while( !fin.eof());
 
 	   }
