@@ -54,56 +54,53 @@ void print_buffer( std::vector<char>& in_buffer){
 int main(){
 
 	unsigned int blockSize, inputSize;
-	unsigned int destLen, sourceLen, threadID;	
-		
-	
-//	numThreads = 4;	
+	unsigned int destLen, sourceLen, threadID;
+
+
+//	numThreads = 4;
 	blockSize = 900;
 	inputSize = numThreads * blockSize;
-	
+
 	std::vector <char> in_buffer(inputSize);
-	std::vector< std::vector <char> > out_buffers(inputSize);
-		
+	std::vector< std::vector <char> > out_buffers(numThreads);
+
 
 	std::fstream fin("test.txt");
 
 	if ( !fin ) {std::cerr << "Unable to open file";}
- 
+
 	else {
 
-	   do {
+	   while(!fin.eof()) {
 
-		
-		fin.read( &in_buffer[0], in_buffer.size());	
-		int actualReadSize = fin.gcount();	
-		cout << actualReadSize;							
-//		if(fin.eof())
-//		{	int actualReadSize = fin.gcount();	
-//			
-//			cout << "READ NOT FULL" << actualReadSize;
-//		}
+
+		fin.read( &in_buffer[0], in_buffer.size());
+		int actualReadSize = fin.gcount();
+		cout << " ACTUAL READ SIZE " << actualReadSize;
 
 
 		for (int ID = 0; ID < numThreads; ++ID){
 
 //			unsigned int outputSize = (600 + (actualReadSize * 1.2));
 
-			partition_range(0, actualReadSize, numThreads, ID, partition_start[ID], partition_end[ID]);			
+			partition_range(0, actualReadSize, numThreads, ID, partition_start[ID], partition_end[ID]);
+			
+			out_buffers[ID].resize(((partition_end[ID] - partition_start[ID]) * 1.2) + 600);
+//			cout << "THREAD ID "<< threadID << "SIZE " << out_buffers[threadID].size();
+			unsigned int destLen = out_buffers[ID].size();
+			//char* dest;
 
-//			out_buffers[threadID].resize( partition_start[threadID] - partition_end[threadID]);
-//			cout << out_buffers[threadID].size();
-//			BZ2_bzBuffToBuffCompress( reinterpret_cast<char*> (&out_buffers[threadID]), &outputSize, reinterpret_cast<char*> (&in_buffer), actualReadSize, 9, 0, 0);
+			BZ2_bzBuffToBuffCompress( reinterpret_cast<char*> (&out_buffers[ID]), &destLen, reinterpret_cast<char*> (&in_buffer), actualReadSize, 1, 0, 0);
 
-		}	
-//		cout << out_buffers[0].size();		
-		
-	     } while( !fin.eof());
+		}
+		cout << out_buffers.size();
+	
+	     }// while( !fin.eof());
 
 	   }
 
-//	cout << "BUFFER SIZE " << partition_range(0, in_buffer.size(), 4, 0);	
-	//cout <<"BUFFER" << &in_buffer[1];	
+//	cout << "BUFFER SIZE " << partition_range(0, in_buffer.size(), 4, 0);
+	//cout <<"BUFFER" << &in_buffer[1];
 
    return 0;
 }
-
