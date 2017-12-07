@@ -5,11 +5,13 @@
 #include <fstream>
 #include <algorithm>
 
+//g++ -o final final.cpp -lbz2 -L.
+
 using std::cin;
 using std::cout;
 
 unsigned int numThreads = 4;
-unsigned int start, end;
+
 static std::vector<int> partition_start (numThreads);
 static std::vector<int> partition_end (numThreads);
 
@@ -76,14 +78,14 @@ int main(){
 
 			fin.read( &in_buffer[0], in_buffer.size());
 			int actualReadSize = fin.gcount();
-			//		cout << " ACTUAL READ SIZE " << actualReadSize;
+					cout << " ACTUAL READ SIZE " << actualReadSize;
 
 			in_buffer.resize(actualReadSize);
 			//		print_buffer(in_buffer);
 			cout << "BUFFER SIZE " << in_buffer.size();
-
+	//	std::vector< std::vector <char> > out_buffers(numThreads);
 			for (int ID = 0; ID < numThreads; ++ID){
-
+				
 				//			unsigned int outputSize = (600 + (actualReadSize * 1.2));
 
 				partition_range(0, actualReadSize, numThreads, ID, partition_start[ID], partition_end[ID]);
@@ -92,20 +94,20 @@ int main(){
 				//			cout << "THREAD ID "<< threadID << "SIZE " << out_buffers[threadID].size();
 
 				unsigned int destLen = out_buffers[ID].size();
-				char *dest = (char*) &out_buffers[ID];
+				char *dest = (char*) &out_buffers[ID][0];
 				char *source = (char*) (&in_buffer);
 				inputSize = partition_end[ID] - partition_start[ID];
 				//                      char* dest = reinterpret_cast<char*> (&out_buffers[ID]);
 				//                      char * source = reinterpret_cast<char*> (&in_buffer);
 
 				std::vector<char> temp ((in_buffer.begin() + partition_start[ID]), (in_buffer.begin() + partition_end[ID]));
-				char*temp1 = (char*) (&temp);		
+				char*temp1 = (char*) (&temp[0]);		
 
 				cout << "THREAD ID " << ID << " ";
 				print_buffer(temp);		
 
 				int result = BZ2_bzBuffToBuffCompress( dest, &destLen, temp1, inputSize, 9, 0, 0);
-
+				//&in_buffer[partition_start[ID]]
 				switch (result)
 
 				{
@@ -115,7 +117,7 @@ int main(){
 
 				} 
 
-
+				
 			}  
 
 
