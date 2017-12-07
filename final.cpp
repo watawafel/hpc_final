@@ -80,6 +80,7 @@ int main(){
 
 			in_buffer.resize(actualReadSize);
 			//		print_buffer(in_buffer);
+			cout << "BUFFER SIZE " << in_buffer.size();
 
 			for (int ID = 0; ID < numThreads; ++ID){
 
@@ -99,24 +100,23 @@ int main(){
 
 				std::vector<char> temp ((in_buffer.begin() + partition_start[ID]), (in_buffer.begin() + partition_end[ID]));
 				char*temp1 = (char*) (&temp);		
-		
+
 				cout << "THREAD ID " << ID << " ";
 				print_buffer(temp);		
-		
+
 				int result = BZ2_bzBuffToBuffCompress( dest, &destLen, temp1, inputSize, 9, 0, 0);
-				
+
 				switch (result)
 
 				{
-					case BZ_OK: 
-				//		cout << "BZ_OK";
-						break;
-					case BZ_OUTBUFF_FULL: cout<<"FULL";break;
-					case BZ_MEM_ERROR: cout <<"MEMERROR";break;
+					case BZ_OK: cout << "BZ_OK"; break;	
+					case BZ_OUTBUFF_FULL: cout<< "FULL"; break;
+					case BZ_MEM_ERROR: cout << "MEMERROR"; break;
 
 				} 
 
-			}
+
+			}  
 
 
 		}
