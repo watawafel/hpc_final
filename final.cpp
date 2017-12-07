@@ -87,9 +87,16 @@ int main(){
 			for (int ID = 0; ID < numThreads; ++ID){
 				
 				//			unsigned int outputSize = (600 + (actualReadSize * 1.2));
-
+				if( actualReadSize > 50 ){
 				partition_range(0, actualReadSize, numThreads, ID, partition_start[ID], partition_end[ID]);
 				//			cout << sizeof(std::vector<char>) + (sizeof(char) * in_buffer.size());	
+				}
+				else {
+				
+					partition_range(0, actualReadSize, 1, ID, partition_start[ID], partition_end[ID]);
+					numThreads = 1;
+					}
+
 				out_buffers[ID].resize(((partition_end[ID] - partition_start[ID]) * 1.2) + 600);
 				//			cout << "THREAD ID "<< threadID << "SIZE " << out_buffers[threadID].size();
 
