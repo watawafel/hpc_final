@@ -111,7 +111,7 @@ int main(){
 				char*temp1 = (char*) (&temp[0]);		
 
 //				cout << "THREAD ID " << ID << " ";
-//				print_buffer(temp);		
+				print_buffer(temp);		
 
 				int result = BZ2_bzBuffToBuffCompress( dest, &destLen, temp1, inputSize, 9, 0, 0);
 				//&in_buffer[partition_start[ID]]
@@ -124,10 +124,13 @@ int main(){
 
 				} 
 
-				
+			//cout <<"THREAD ID "<<  ID << &out_buffers[ID][0];
+			
 			}  
-
-
+			cout << &out_buffers[0][0];
+			cout << &out_buffers[1][0];
+			cout << &out_buffers[2][0];
+			cout << &out_buffers[3][0];
 		}
 
 	}
