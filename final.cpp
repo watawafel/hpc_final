@@ -68,7 +68,7 @@ int main(){
 
 
 	std::fstream fin("test.txt");
-
+	std::ofstream fout("otest.txt");
 	if ( !fin ) {std::cerr << "Unable to open file";}
 
 	else {
@@ -122,15 +122,17 @@ int main(){
 					case BZ_OUTBUFF_FULL:/* cout<< "FULL"*/; break;
 					case BZ_MEM_ERROR: /*cout << "MEMERROR"*/; break;
 
-				} 
-
-			//cout <<"THREAD ID "<<  ID << &out_buffers[ID][0];
+				}
+				 
 			
 			}  
-			cout << &out_buffers[0][0];
-			cout << &out_buffers[1][0];
-			cout << &out_buffers[2][0];
-			cout << &out_buffers[3][0];
+			
+			for (int i = 0; i <numThreads; ++i){
+			fout << &out_buffers[i][0];
+			
+			
+			
+			}
 		}
 
 	}
