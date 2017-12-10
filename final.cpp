@@ -58,25 +58,25 @@ void print_buffer( std::vector<char>& in_buffer){
 }
 
 
-int main(){
+int main(int argc, char *argv[]){
 	unsigned int numThreads = 1;
-	
+
 #ifdef _OPENMP
-numThreads = omp_get_max_threads();
+	numThreads = omp_get_max_threads();
 #endif
 	std::vector<int> partition_start (numThreads);
 	std::vector<int> partition_end (numThreads);
 	unsigned int blockSize, inputSize;
 	unsigned int destLen, sourceLen, threadID;
 
-	blockSize = 900;
+	blockSize = 1800;
 	inputSize = numThreads * blockSize;
 
 	std::vector <char> in_buffer(inputSize);
 	std::vector< std::vector <char> > out_buffers(numThreads);
 
 
-	std::fstream fin("test.txt");
+	std::fstream fin(argv[1]);
 	std::ofstream fout("otest.bz2");
 	if ( !fin ) {std::cerr << "Unable to open file";}
 
@@ -94,23 +94,15 @@ numThreads = omp_get_max_threads();
 			//		cout << "BUFFER SIZE " << in_buffer.size();
 
 
-			# pragma omp parallel for
+# pragma omp parallel for
 			for (int ID = 0; ID < numThreads; ++ID){
 
 				//			unsigned int outputSize = (600 + (actualReadSize * 1.2));
-				
-					partition_range(0, actualReadSize, numThreads, ID, partition_start[ID], partition_end[ID]);
 
-				/*if( actualReadSize > 50 ){
-					partition_range(0, actualReadSize, numThreads, ID, partition_start[ID], partition_end[ID]);
-					//			cout << sizeof(std::vector<char>) + (sizeof(char) * in_buffer.size());	
-				}
-				else {
-					numThreads = 1;
-					partition_range(0, actualReadSize, numThreads, ID, partition_start[ID], partition_end[ID]);
+				partition_range(0, actualReadSize, numThreads, ID, partition_start[ID], partition_end[ID]);
 
-				}*/
-//if partiton end-partiton start = 0 , resize to 0 and dont call bzip
+
+				//if partiton end-partiton start = 0 , resize to 0 and dont call bzip
 				out_buffers[ID].resize(((partition_end[ID] - partition_start[ID]) * 1.2) + 600);
 				//			cout << "THREAD ID "<< threadID << "SIZE " << out_buffers[threadID].size();
 
@@ -120,38 +112,38 @@ numThreads = omp_get_max_threads();
 				inputSize = partition_end[ID] - partition_start[ID];
 				//                      char* dest = reinterpret_cast<char*> (&out_buffers[ID]);
 				//                      char * source = reinterpret_cast<char*> (&in_buffer);
+				if ( inputSize != 0 ){
+					std::vector<char> temp ((in_buffer.begin() + partition_start[ID]), (in_buffer.begin() + partition_end[ID]));
+					char*temp1 = (char*) (&temp[0]);		
 
-				std::vector<char> temp ((in_buffer.begin() + partition_start[ID]), (in_buffer.begin() + partition_end[ID]));
-				char*temp1 = (char*) (&temp[0]);		
+					//			cout << "THREAD ID " << ID << " ";
+					//			print_buffer(temp);		
 
-				//			cout << "THREAD ID " << ID << " ";
-				//			print_buffer(temp);		
+					int result = BZ2_bzBuffToBuffCompress( dest, &destLen, temp1, inputSize, 1, 0, 0);
+					//&in_buffer[partition_start[ID]]
+					switch (result)
 
-				int result = BZ2_bzBuffToBuffCompress( dest, &destLen, temp1, inputSize, 9, 0, 0);
-				//&in_buffer[partition_start[ID]]
-				switch (result)
+					{
+						case BZ_OK: /*cout << "BZ_OK"*/; break;	
+						case BZ_OUTBUFF_FULL:/* cout<< "FULL"*/; break;
+						case BZ_MEM_ERROR: /*cout << "MEMERROR"*/; break;
 
-				{
-					case BZ_OK: /*cout << "BZ_OK"*/; break;	
-					case BZ_OUTBUFF_FULL:/* cout<< "FULL"*/; break;
-					case BZ_MEM_ERROR: /*cout << "MEMERROR"*/; break;
+					}
 
+					out_buffers[ID].resize(destLen);
 				}
-				
-				out_buffers[ID].resize(destLen);
-		
-			}  	//   <--- BARRIER
-			
+
+				else { 
+					out_buffers[ID].resize(0);
+				}
+			}		  //   <--- BARRIER
+
 			for (int i = 0; i <numThreads; ++i){
 				for (int j = 0; j < out_buffers[i].size(); ++j){
 					fout << out_buffers[i][j];
 				}
 				//	cout <<"THREAD"<< i << &out_buffers[i][0];
-				//out_buffers[i].erase(out_buffers[i].begin() + out_buffers[i].size());
-				//for_each(out_buffers.begin(), out_buffers.end(), out_buffers.erase() );
 
-				//	cout << "DEL THREAD" << i << &out_buffers[i][0];
-				//	out_buffers.clear();		
 			} 
 		}
 
