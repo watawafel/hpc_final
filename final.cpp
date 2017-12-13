@@ -69,7 +69,9 @@ int main(int argc, char *argv[]){
         unsigned int blockSize, inputSize;
         unsigned int destLen, sourceLen, threadID;
 
-        blockSize = 1800;
+
+
+        blockSize = 100000;
         inputSize = numThreads * blockSize;
 
         std::vector <char> in_buffer(inputSize);
@@ -119,7 +121,8 @@ int main(int argc, char *argv[]){
                                         //                      cout << "THREAD ID " << ID << " ";
                                         //                      print_buffer(temp);
 
-                                        int result = BZ2_bzBuffToBuffCompress( dest, &destLen, temp1, inputSize, 9, 0, 0);
+
+                                        int result = BZ2_bzBuffToBuffCompress( dest, &destLen, temp1, inputSize, 1, 0, 0);
                                         //&in_buffer[partition_start[ID]]
                                         switch (result)
 
