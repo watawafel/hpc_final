@@ -5,7 +5,7 @@
 #include <fstream>
 #include <algorithm>
 #include <stdio.h>
-//g++ -o final final.cpp -lbz2 -L.
+//g++ -o final -fopenmp final.cpp -lbz2 -L.
 
 #ifdef _OPENMP
 #include <omp.h>
